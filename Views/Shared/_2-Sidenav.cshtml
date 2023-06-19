@@ -1,0 +1,159 @@
+﻿@using System.Security.Claims;
+@*Getting values of curent controller and action method.*@
+@{
+    string controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? string.Empty;
+    string action = ViewContext.RouteData.Values["action"]?.ToString() ?? string.Empty;
+}
+<!-- Menu -->
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    
+    <div class="app-brand demo">
+        
+        <partial name="Logo" />
+
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
+
+        <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+            <i class="bx bx-chevron-left bx-sm align-middle"></i>
+        </a>
+    </div>
+
+    <div class="menu-inner-shadow"></div>
+
+    <ul class="menu-inner py-1">
+        <!-- Dashboard -->
+        <li class="menu-item 
+            @(controller == "Home" && action == "Index" ? "active" : "")" 
+              id="dashboard">
+
+            <a class="menu-link" asp-controller="Home" asp-action="Index">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div data-i18n="Analytics">Dashboard</div>
+            </a>
+        </li>
+        <!-- / Dashboard -->
+
+        @if (User.Identity?.IsAuthenticated == false)
+        {
+        <!--Authentication  heading-->
+        <li class="menu-header small">
+            <span class="menu-header-text">Authenticaion</span>
+        </li>
+        <!--Authentication  heading-->
+
+        <!--Register-->
+        <li class="menu-item">
+            <a asp-controller="Users" asp-action="Register"
+               class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user-plus"></i>
+                <div data-i18n="Register">Register</div>
+            </a>
+        </li>
+        <!--Register-->
+
+        <!--Login-->
+        <li class="menu-item">
+            <a asp-controller="Users" asp-action="Login"
+               class="menu-link">
+                <i class="menu-icon tf-icons bx bx-log-in"></i>
+                <div data-i18n="Login">Login</div>
+            </a>
+        </li>
+        <!--Login-->
+        }
+
+        <!--User List-->
+        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Staff"))
+        {
+            <li class="menu-item
+            @(controller == "Users" && action == "UserList" ? "active" : "")">
+
+                <a asp-controller="Users" asp-action="UserList"
+                   class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-group"></i>
+                    <div data-i18n="UserList">User List</div>
+                </a>
+            </li>
+        }
+        <!--User List-->
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <!--Residences  heading-->
+            <li class="menu-header small">
+                <span class="menu-header-text">Residences</span>
+            </li>
+            <!--Residences heading-->
+
+            <!--Booking-->
+            <li class="menu-item
+            @(controller == "Bookings" && action == "BookingList" ? "active" : "")">
+
+                <a asp-controller="Bookings" asp-action="BookingList"
+                   class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-list-ol"></i>
+                    <div data-i18n="AddResidences">Bookings</div>
+                </a>
+            </li>
+            <!--Booking-->
+        
+        <!--Hotel-->
+        <li class="menu-item 
+            @(controller == "Residences" && action == "Hotel" ? "active" : "")">
+
+            <a asp-controller="Residences" asp-action="Hotel"
+               class="menu-link">
+                <i class="menu-icon tf-icons bx bx-hotel"></i>
+                <div data-i18n="Hotel">Hotel</div>
+            </a>
+        </li>
+        <!--Hotel-->
+
+        <!--Hostel-->
+        <li class="menu-item 
+            @(controller == "Residences" && action == "Hostel" ? "active" : "")">
+
+            <a asp-controller="Residences" asp-action="Hostel"
+               class="menu-link">
+                <i class="menu-icon tf-icons bx bx-building-house"></i>
+                <div data-i18n="Hostel">Hostel</div>
+            </a>
+        </li>
+        <!--Hostel-->
+
+        <!--House-->
+        <li class="menu-item 
+            @(controller == "Residences" && action == "House" ? "active" : "")">
+
+            <a asp-controller="Residences" asp-action="House"
+               class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-institution"></i>
+                <div data-i18n="House">House</div>
+            </a>
+        </li>
+        <!--House-->
+        }
+
+        <!--Info  heading-->
+        <li class="menu-header small">
+            <span class="menu-header-text">Info</span>
+        </li>
+        <!--Info  heading-->
+
+        <!--Privary Policy-->
+        <li class="menu-item
+            @(controller == "Home" && action == "Privacy" ? "active" : "")"
+            id="help">
+
+            <a asp-controller="Home" asp-action="Privacy"
+               class="menu-link">
+                <i class="menu-icon tf-icons bx bx-check-shield"></i>
+                <div data-i18n="Help">Privacy Policy</div>
+            </a>
+        </li>
+        <!--Help-->
+    </ul>
+</aside>
+<!-- / Menu -->

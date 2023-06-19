@@ -1,0 +1,150 @@
+﻿@using System.Security.Claims
+
+<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+     id="layout-navbar">
+    <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
+        <a class="nav-item nav-link px-0 me-xl-4" href="javascript:void(0)">
+            <i class="bx bx-menu bx-sm"></i>
+        </a>
+    </div>
+
+    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+        
+        <ul class="navbar-nav flex-row align-items-center ms-auto">
+            
+            <!-- User -->
+            <li class="nav-item navbar-dropdown dropdown-user dropdown">
+                <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                    
+                        @if(User.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="avatar avatar-online">
+                            <img class="profile-pic w-px-40 h-auto rounded-circle" src="~/assets/img/avatars/default-user.png" alt="" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="avatar avatar-offline">
+                            <img src="~/assets/img/avatars/default-user.png" alt="" class="w-px-40 h-auto rounded-circle" />
+                            </div>
+                        }
+                    
+                </a>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="#">
+                            <div class="d-flex">
+                                <div class="flex-shrink-0 me-3">
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <div class="avatar avatar-online">
+                                            <img class="profile-pic w-px-40 h-auto rounded-circle" src="~/assets/img/avatars/default-user.png" alt="" />
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="avatar avatar-offline">
+                                            <img src="~/assets/img/avatars/default-user.png" alt="" class="w-px-40 h-auto rounded-circle" />
+                                        </div>
+                                    }
+                                </div>
+                                <div class="flex-grow-1">
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <span class="fw-semibold d-block">@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value</span>
+                                        <small class="text-muted">@User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value</small>
+                                    }
+                                    else
+                                    {
+                                        <div class="fw-semibold d-block">Guest</div>
+                                        <small class="text-muted">Not Logged in</small>
+                                    }
+                                </div>
+
+                            </div>
+                        </a>
+                    </li>
+                    @if (User.Identity?.IsAuthenticated == false)
+                    {
+                        <li>
+                            <div class="dropdown-divider"></div>
+                        </li>
+                        <!--Register-->
+                        <li>
+                            <a class="dropdown-item" asp-controller="Users" asp-action="Register">
+                                <i class="tf-icons bx bx-user-plus"></i>
+                                <span class="align-middle">Register</span>
+                            </a>
+                        </li>
+                        <!--Login-->
+                        <li>
+                            <a class="dropdown-item" asp-controller="Users" asp-action="Login">
+                                <i class="tf-icons bx bx-log-in"></i>
+                                <span class="align-middle">Login</span>
+                            </a>
+                        </li>
+                    }
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li>
+                            <div class="dropdown-divider"></div>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" id="LogOut" style="cursor: pointer; color:red;">
+                                <i class="bx bx-log-out me-2"></i>
+                                <span class="align-middle">Log Out</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </li>
+            <!--/ User -->
+            
+        </ul>
+    </div>
+</nav>
+
+
+<!-- The Modal -->
+<div class="modal fade" id="smallModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Attention!</h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <!-- Modal body -->
+            <div class="modal-body mx-2">
+                <div class="row">
+                    Do You Really Want to Logout?
+                </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <!-- Modal footer -->
+            <div class="modal-footer d-flex justify-content-around">
+                <a class="btn btn-danger"
+                   asp-controller="Users"
+                   asp-action="LogOutConfirm">
+                    Logout
+                </a>
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
