@@ -1,5 +1,6 @@
 ﻿using DocApp.Data;
 using DocApp.Models;
+using DocApp.Repositories;
 using DocApp.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -14,20 +15,23 @@ namespace DocApp.Controllers
     public class UsersController : Controller
     {
         private readonly DocAppContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public UsersController(DocAppContext context)
+        public UsersController(DocAppContext context, IUserRepository userRepository)
         {
             _context = context;
+            _userRepository = userRepository;
         }
 
-        public async Task<IActionResult> UserList()
+        public IActionResult DoctorList()
         {
-            if (_context.User == null)
-            {
-                return Problem("Entity set 'DocAppContext.User' is null.");
-            }
-            var _users = await _context.User.ToListAsync();
+            var _users = _userRepository.GetAllUsers();
+            return View(_users);
+        }
 
+        public IActionResult PatientList()
+        {
+            var _users = _userRepository.GetAllUsers();
             return View(_users);
         }
 
@@ -113,7 +117,7 @@ namespace DocApp.Controllers
                 return View(model);
             }
 
-            var user = _context.User.FirstOrDefault(u => u.Email == _user.Email);
+            var user = _context.Users.FirstOrDefault(u => u.Email == _user.Email);
 
             var claims = new List<Claim>
             {
@@ -160,7 +164,7 @@ namespace DocApp.Controllers
 
         private bool UserExists(string email, string password)
         {
-            var _user = _context.User.FirstOrDefault(u => u.Email == email && u.Password == password);
+            var _user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
 
             if (_user == null)
             {

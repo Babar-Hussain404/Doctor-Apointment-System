@@ -1,0 +1,168 @@
+﻿@model IEnumerable<DocApp.Models.Appointment>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Appointment List";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Dashboard /</span> Appointments</h4>
+
+    <!-- Bordered Table -->
+    
+    <partial name="_Alerts" />
+
+    <div class="card">
+        <h5 class="card-header">Appointment List</h5>
+        <div class="card-body">
+            <div class="table-responsive text-nowrap">
+                <table id="booking-table" class="table" style="width:100%">
+                    <thead>
+
+                        <tr>
+                            <th>No</th>
+                            <th>Doctor Name</th>
+                            <th>Patient Name</th>
+                            <th>Patient Phone</th>
+                            <th>SlotNo</th>
+                            <th>Apponiment Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @{
+                            int counter = 1;
+                        }
+                        @foreach (var appointment in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @counter
+                                </td>
+                                <td>@appointment.DoctorName</td>
+                                <td>@appointment.PatientName</td>
+                                <td>@appointment.PatientPhone</td>
+                                <td>@appointment.SlotNo</td>
+                                <td>@appointment.Date.ToShortDateString()</td>
+                                <td>
+                                    @if (appointment.Status == Appointment.StatusEnum.Pending)
+                                    {
+                                        <span class="badge bg-label-info me-1">Pending</span>
+                                    }
+                                    else if (appointment.Status == Appointment.StatusEnum.Active)
+                                    {
+                                        <span class="badge bg-label-success me-1">Approved</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-label-danger me-1">Closed</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-around">
+                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value != "Customer"))
+                                        {
+                                            <a href="/Bookings/Approved?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-success
+                                            @((appointment.Status == Appointment.StatusEnum.Active) ? "disabled" : "")"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-offset="0,4"
+                                               data-bs-placement="top"
+                                               data-bs-html="true"
+                                               title=""
+                                               data-bs-original-title="<i class='bx bx-check-square bx-xs'></i> <span>Active</span>">
+                                                <span class="tf-icons bx bx-check-square"></span>
+                                            </a>
+                                            <a href="/Bookings/Rejected?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-warning
+                                            @((appointment.Status == Appointment.StatusEnum.Closed) ? "disabled" : "")"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-offset="0,4"
+                                               data-bs-placement="top"
+                                               data-bs-html="true"
+                                               title=""
+                                               data-bs-original-title="<i class='bx bx-x-circle bx-xs'></i> <span>Close</span>">
+                                                <span class="tf-icons bx bx-x-circle"></span>
+                                            </a>
+                                        }
+                                        <a href="/Bookings/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-offset="0,4"
+                                           data-bs-placement="top"
+                                           data-bs-html="true"
+                                           title=""
+                                           data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
+                                            <span class="tf-icons bx bx-trash"></span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--/ Bordered Table -->
+    
+</div>
+
+@section scripts {
+    <script src="https://cdn.datatables.net/1.11.0/js/jquery.dataTables.min.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" type="text/javascript"></script>
+    @*<script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js" type="text/javascript"></script>*@
+    <script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js" type="text/javascript"></script>
+
+@*    <script src="~/assets/js/datatables_pdf/pdfmake.min.js"></script>
+    <script src="~/assets/js/datatables_pdf/vfs_fonts.js"></script>*@
+
+    <script>
+
+        $(document).ready(function () {
+            $('#booking-table').DataTable({
+                "scrollY": "70vh",
+                "scrollCollapse": true,
+                "scrollX": "auto",
+                "pageLength": -1,
+
+                buttons: {
+                    buttons: [
+                        {
+                            extend: 'excelHtml5',
+                            className: 'excelButton btn btn-sm btn-outline-success mb-2',
+                            text: '<i class="fas fa-file-excel"></i> Excel'
+                        },
+                        {
+                            extend: 'pdfHtml5',
+                            className: 'pdfButton btn btn-sm btn-outline-danger mb-2',
+                            text: '<i class="fas fa-file-pdf"></i> PDF'
+                        }
+                    ]
+                },
+                dom: 'Blftip',
+                lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+                
+            });
+
+            $(".pdfButton").click(function () {
+                debugger
+                GetPDF();
+            });
+
+            function GetPDF() {
+                var pdfDoc = {
+                    pageSize: 'A5',
+                    fontSize: 8,
+                    pageOrientation: 'landscape',
+                    margin: [0, 20, 0, 8],
+
+                };
+                pdfMake.createPdf(pdfDoc);
+            }
+
+        });
+
+
+    </script>
+}

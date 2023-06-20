@@ -9,6 +9,8 @@ namespace DocApp.Data
             : base(options)
         {
         }
-        public DbSet<User> User { get; set; } = default!;
+        public DbSet<User> Users { get; set; } = default!;
+        public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Patient> Patients { get; set; }
     }
 }

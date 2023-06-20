@@ -64,20 +64,40 @@
         <!--Login-->
         }
 
-        <!--User List-->
+        <!--Lists-->
         @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Staff"))
         {
             <li class="menu-item
-            @(controller == "Users" && action == "UserList" ? "active" : "")">
+            @(controller == "Users" && action == "DoctorList" ? "active" : "")">
 
-                <a asp-controller="Users" asp-action="UserList"
+                <a asp-controller="Users" asp-action="DoctorList"
                    class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-group"></i>
-                    <div data-i18n="UserList">User List</div>
+                    <i class="menu-icon tf-icons fas fa-user-md"></i>
+                    <div data-i18n="DoctorList">Doctors</div>
+                </a>
+            </li>
+
+            <li class="menu-item
+            @(controller == "Users" && action == "PatientList" ? "active" : "")">
+
+                <a asp-controller="Users" asp-action="PatientList"
+                   class="menu-link">
+                    <i class="menu-icon tf-icons fas fa-user-injured"></i>
+                    <div data-i18n="PatientList">Patients</div>
+                </a>
+            </li>
+
+            <li class="menu-item
+            @(controller == "Appointments" && action == "AppointmentList" ? "active" : "")">
+
+                <a asp-controller="Appointments" asp-action="AppointmentList"
+                   class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-list-ol"></i>
+                    <div data-i18n="AppointmentList">Appointments</div>
                 </a>
             </li>
         }
-        <!--User List-->
+        <!--Lists-->
 
         @if (User.Identity?.IsAuthenticated == true)
         {
@@ -99,41 +119,6 @@
             </li>
             <!--Booking-->
         
-        <!--Hotel-->
-        <li class="menu-item 
-            @(controller == "Residences" && action == "Hotel" ? "active" : "")">
-
-            <a asp-controller="Residences" asp-action="Hotel"
-               class="menu-link">
-                <i class="menu-icon tf-icons bx bx-hotel"></i>
-                <div data-i18n="Hotel">Hotel</div>
-            </a>
-        </li>
-        <!--Hotel-->
-
-        <!--Hostel-->
-        <li class="menu-item 
-            @(controller == "Residences" && action == "Hostel" ? "active" : "")">
-
-            <a asp-controller="Residences" asp-action="Hostel"
-               class="menu-link">
-                <i class="menu-icon tf-icons bx bx-building-house"></i>
-                <div data-i18n="Hostel">Hostel</div>
-            </a>
-        </li>
-        <!--Hostel-->
-
-        <!--House-->
-        <li class="menu-item 
-            @(controller == "Residences" && action == "House" ? "active" : "")">
-
-            <a asp-controller="Residences" asp-action="House"
-               class="menu-link">
-                <i class="menu-icon tf-icons bx bxs-institution"></i>
-                <div data-i18n="House">House</div>
-            </a>
-        </li>
-        <!--House-->
         }
 
         <!--Info  heading-->

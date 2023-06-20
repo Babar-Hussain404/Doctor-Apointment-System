@@ -19,12 +19,6 @@ namespace DocApp.Models
         public bool isActive { get; set; } = true;
         public bool isDeleted { get; set; } = false;
 
-        //public BaseEntity()
-        //{
-        //    CreatedOn = DateTime.UtcNow;
-        //    UpdatedOn = DateTime.UtcNow;
-        //    DeletedOn = DateTime.UtcNow;
-        //}
     }
 
 }
