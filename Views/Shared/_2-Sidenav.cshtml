@@ -98,27 +98,35 @@
             </li>
         }
         <!--Lists-->
-
-        @if (User.Identity?.IsAuthenticated == true)
+        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Patient"))
         {
-            <!--Residences  heading-->
+            <!--Info  heading-->
             <li class="menu-header small">
-                <span class="menu-header-text">Residences</span>
+                <span class="menu-header-text">Menu</span>
             </li>
-            <!--Residences heading-->
-
-            <!--Booking-->
+            <!--Info  heading-->
+            
             <li class="menu-item
-            @(controller == "Bookings" && action == "BookingList" ? "active" : "")">
+            @(controller == "Appointments" && action == "AppointmentList" ? "active" : "")">
 
-                <a asp-controller="Bookings" asp-action="BookingList"
+                <a asp-controller="Appointments" asp-action="AppointmentList"
                    class="menu-link">
                     <i class="menu-icon tf-icons bx bx-list-ol"></i>
-                    <div data-i18n="AddResidences">Bookings</div>
+                    <div data-i18n="AppointmentList">Appointments</div>
                 </a>
             </li>
-            <!--Booking-->
-        
+
+            <!--Add Appointment-->
+            <li class="menu-item
+            @(controller == "Appointments" && action == "AddAppointment" ? "active" : "")">
+
+                <a asp-controller="Appointments" asp-action="AddAppointment"
+                   class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-book-add"></i>
+                    <div data-i18n="AddAppointment">Add Appointment</div>
+                </a>
+            </li>
+            <!--Add Appointment-->
         }
 
         <!--Info  heading-->

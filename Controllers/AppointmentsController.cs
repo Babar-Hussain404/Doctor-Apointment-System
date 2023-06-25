@@ -1,45 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using DocApp.Data;
+﻿using DocApp.Data;
+using DocApp.GenericRepository;
 using DocApp.Models;
 using DocApp.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace DocApp.Controllers
 {
     public class AppointmentsController : Controller
     {
-        private readonly DocAppContext _context;
+        private readonly IGenericRepository<Appointment> _appointments;
+        private readonly IGenericRepository<User> _users;
 
-        public AppointmentsController(DocAppContext context)
+        public AppointmentsController(IGenericRepository<Appointment> appointments, IGenericRepository<User> users)
         {
-            _context = context;
+            _appointments = appointments;
+            _users = users;
         }
 
         // GET: Booking List
-        public async Task<IActionResult> AppointmentList()
+        public IActionResult AppointmentList()
         {
-            var _apointmentList = await _context.Appointments.ToListAsync();
+            var _apointmentList = _appointments.GetAll();
             return View(_apointmentList);
         }
 
-        public async Task<IActionResult> Create(string Id)
-            {
-            var _patient = _context.Patients.FirstOrDefault(r => r.Id == new Guid(Id));
+        // GET: Add Appointment
+        public IActionResult AddAppointment()
+        {
+            return View();
+        }
 
-            if (_patient == null) { return NotFound(); }
-
-            if (IsAppointed(Id))
-            {
-                TempData["error"] = "You have already made an appointment";
-                return RedirectToAction("AppointmentList", "Appointments");
-            }
-
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddAppointment(PatientVM model)
+        {
             // Get the current user's ID from the session
             byte[]? userIdBytes;
             if (!HttpContext.Session.TryGetValue("UserId", out userIdBytes))
@@ -48,43 +43,52 @@ namespace DocApp.Controllers
             }
 
             Guid userId = new Guid(Encoding.ASCII.GetString(userIdBytes));
-            // Retrieve the user's information from the database using their ID
-            User? _user = _context.Users.FirstOrDefault(u => u.Id == userId);
 
-            if(_user == null) { return NotFound(); }
+            var _patient = _users.GetById(userId);
+
+            //Cheeck if there is any active appointment
+            var _apointment = _appointments.GetAll().Any(e => e.PatientId == userId && e.isActive == true);
+            
+            if (_apointment)
+            {
+                TempData["error"] = "You have already made an appointment";
+                return RedirectToAction("AppointmentList");
+            }
 
             var appointment = new Appointment
             {
                 Id = Guid.NewGuid(),
+                PatientId = _patient.Id,
                 DoctorName = "Doctor",
-                PatientName = _patient.FName + _patient.LName,
+                PatientName = model.FName + model.LName,
                 PatientPhone = _patient.Phoneno,
-                SlotNo = "11",
+                SlotNo = model.SlotNo,
                 Date = DateTime.Now,
                 Status = Appointment.StatusEnum.Pending
             };
 
-            _context.Appointments.Add(appointment);
-            await _context.SaveChangesAsync();
+            _appointments.Add(appointment);
+            _appointments.SaveChanges();
 
             TempData["success"] = "Appointment Created successfully";
-            return RedirectToAction(nameof(AppointmentList));
-            
+            return RedirectToAction("AppointmentList");
+
         }
 
         //GET: Bookings/Approved/Id
-        public async Task<IActionResult> Approved(string Id)
+        public IActionResult Active(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
             {
                 return NotFound();
             }
 
-            var appointment = _context.Appointments.FirstOrDefault(b => b.Id == new Guid(Id));
+            var _appointment = _appointments.GetById(new Guid(Id));
 
-            if (appointment != null)
+            if (_appointment != null)
             {
-                appointment.Status = Appointment.StatusEnum.Active;
+                _appointment.Status = Appointment.StatusEnum.Active;
+                _appointment.isActive = true;
                 TempData["success"] = "Appointment Activeted successfully";
             }
             else
@@ -92,23 +96,25 @@ namespace DocApp.Controllers
                 TempData["error"] = "Unable to find the Appointment.";
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(AppointmentList));
+            _appointments.SaveChanges();
+
+            return RedirectToAction("AppointmentList");
         }
 
         //GET: Bookings/Rejected/Id
-        public async Task<IActionResult> Rejected(string Id)
+        public IActionResult Closed(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
             {
                 return NotFound();
             }
 
-            var booking = _context.Appointments.FirstOrDefault(b => b.Id == new Guid(Id));
+            var _appointment = _appointments.GetById(new Guid(Id));
 
-            if (booking != null)
+            if (_appointment != null)
             {
-                booking.Status = Appointment.StatusEnum.Closed;
+                _appointment.Status = Appointment.StatusEnum.Closed;
+                _appointment.isActive = false;
                 TempData["success"] = "Appointment Closed successfully";
             }
             else
@@ -116,37 +122,30 @@ namespace DocApp.Controllers
                 TempData["error"] = "Unable to find the Appointment.";
             }
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(AppointmentList));
+            _appointments.SaveChanges();
+
+            return RedirectToAction("AppointmentList");
         }
 
         //GET: Bookings/Delete/Id
-        public async Task<IActionResult> Delete(string Id)
+        public IActionResult Delete(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
             {
                 return NotFound();
             }
 
-            var booking = _context.Appointments.FirstOrDefault(b => b.Id == new Guid(Id));
-            
-            if(booking != null) 
-            {
-                _context.Appointments.Remove(booking);
-                await _context.SaveChangesAsync();
-            }
+            _appointments.Delete(new Guid(Id));
+            _appointments.SaveChanges();
 
             TempData["success"] = "Appointment deleted successfully";
-            return RedirectToAction(nameof(AppointmentList));
+            return RedirectToAction("AppointmentList");
         }
 
-        private bool IsAppointed(string Id)
-        {
-            return (_context.Appointments?.Any(e => e.PatientId == new Guid(Id))).GetValueOrDefault();
-        }
         private bool AppointmentExists(string Id)
         {
-            return (_context.Appointments?.Any(e => e.Id == new Guid(Id))).GetValueOrDefault();
+            return _appointments.GetById(new Guid(Id)) != null;
         }
+
     }
 }

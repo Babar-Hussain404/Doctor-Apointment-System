@@ -1,0 +1,149 @@
+﻿@model DocApp.ViewModels.PatientVM
+@{
+    ViewData["Title"] = "Add Appointment";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Residences /</span> Add Appointment</h4>
+
+    <!-- Basic Layout -->
+    <div class="row">
+        <div class="col-xl-2"></div>
+
+        <!-- Message send form-->
+        <div class="col-xl-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex">
+                    <h5 class="mx-auto my-3"><strong> ADD NEW APPOINTMENT </strong></h5>
+
+                </div>
+                <div class="card-body">
+                    <form asp-action="AddAppointment" id="sub" method="post">
+                        <div class="row">
+
+                            <!--First Name-->
+                            <div class="col-md-12 col-lg-6 mb-3">
+                                <label asp-for="FName" class="form-label"></label>
+                                <input asp-for="FName"
+                                       class="form-control"
+                                       id="FName"
+                                       name="FName"
+                                       value="John"
+                                       placeholder="Enter First Name"
+                                       required
+                                       autofocus />
+                                <span asp-validation-for="FName" class="text-danger"></span>
+                            </div>
+
+                            <!--Last Name-->
+                            <div class="col-md-12 col-lg-6 mb-3">
+                                <label asp-for="LName" class="form-label"></label>
+                                <input asp-for="LName"
+                                       class="form-control"
+                                       id="LName"
+                                       name="LName"
+                                       value="Doe"
+                                       placeholder="Enter Last Name"
+                                       required />
+                                <span asp-validation-for="LName" class="text-danger"></span>
+                            </div>
+
+                            <!--Phone No-->
+                            <div class="col-md-12 col-lg-6 mb-3">
+                                <label class="form-label" asp-for="Phoneno"></label>
+                                <div class="input-group input-group-merge">
+                                    <span id="basic-icon-default-phone2" class="input-group-text">
+                                        <i class="bx bx-phone"></i>
+                                    </span>
+                                    <input asp-for="Phoneno"
+                                           class="form-control"
+                                           value="03001234567"
+                                           placeholder="0300 1234567" />
+                                </div>
+                                <div class="form-text">Phone no must be 11 digits.</div>
+                                <span asp-validation-for="Phoneno" class="text-danger"></span>
+                            </div>
+
+                            <!--Disease-->
+                            <div class="col-md-12 col-lg-6 mb-3">
+                                <label asp-for="Disease" class="form-label"></label>
+                                <div class="input-group input-group-merge">
+                                    <span id="basic-icon-residence-owner-name" class="input-group-text">
+                                        <i class='bx bx-slider'></i>
+                                    </span>
+                                    <select class="form-select" asp-for="Disease" aria-label="Select Residence Type">
+                                        <option selected value="No Disease">No Disease</option>
+                                        <option value="Influenza">Influenza</option>
+                                        <option value="Common Cold">Common Cold</option>
+                                        <option value="Diabetes">Diabetes</option>
+                                        <option value="Hypertension">Hypertension</option>
+                                        <option value="Asthma">Asthma</option>
+                                        <option value="Arthritis">Arthritis</option>
+                                        <option value="Depression">Depression</option>
+                                        <option value="Cardiovascular Disease">Cardiovascular Disease</option>
+                                        <option value="Gastroenteritis">Gastroenteritis</option>
+                                        <option value="Pneumonia">Pneumonia</option>
+                                    </select>
+                                </div>
+                                <span asp-validation-for="Disease" class="text-danger"></span>
+                            </div>
+
+                            <!--Description-->
+                            <div class="col-md-12 col-lg-8 mb-3">
+                                <label class="form-label" asp-for="Description"></label>
+                                <div class="input-group input-group-merge">
+                                    <span id="basic-icon-default-message2" class="input-group-text">
+                                        <i class='bx bxs-detail'></i>
+                                    </span>
+                                    <textarea id="Description"
+                                              class="form-control"
+                                              asp-for="Description"
+                                              placeholder="Write about your disease and your condition..."
+                                              aria-label="Write about your disease and your condition..."
+                                              aria-describedby="basic-icon-default-description"></textarea>
+                                </div>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <!--Slot No-->
+                            <div class="col-md-12 col-lg-4 mb-3">
+                                <label asp-for="SlotNo" class="form-label"></label>
+                                <div class="input-group input-group-merge">
+                                    <span id="basic-icon-residence-owner-name" class="input-group-text">
+                                        <i class='bx bx-slider'></i>
+                                    </span>
+                                    <select class="form-select" asp-for="SlotNo" aria-label="Select Slot Number">
+                                        <option value="9am-10am">9am-10am</option>
+                                        <option value="10am-11am">10am-11am</option>
+                                        <option value="11am-12pm">11am-12pm</option>
+                                        <option value="12pm-1pm">12pm-1pm</option>
+                                        <option value="1pm-2pm">1pm-2pm</option>
+                                        <option value="2pm-3pm">2pm-3pm</option>
+                                        <option value="3pm-4pm">3pm-4pm</option>
+                                        <option value="4pm-5pm">4pm-5pm</option>
+                                        <option value="5pm-6pm">5pm-6pm</option>
+                                        <option value="6pm-7pm">6pm-7pm</option>
+                                    </select>
+                                </div>
+                                <div class="form-text">Choose a suitable time slot.</div>
+                                <span asp-validation-for="SlotNo" class="text-danger"></span>
+                            </div>
+
+                        </div>
+
+                        <!--Buttons-->
+                        <div class="d-flex justify-content-around">
+                            <button type="submit" class="btn btn-primary w-25 ">
+                                <span class="tf-icons bx bx-book-add"></span>&nbsp;Add
+                            </button>
+
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2"></div>
+    </div>
+</div>
