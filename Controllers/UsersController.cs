@@ -13,14 +13,11 @@ namespace DocApp.Controllers
     //[AllowAnonymous]
     public class UsersController : Controller
     {
-        private readonly DocAppContext _context;
         private readonly IGenericRepository<User> _users;
 
-
-        public UsersController(DocAppContext context, IGenericRepository<User> repository)
+        public UsersController(IGenericRepository<User> users)
         {
-            _context = context;
-            _users = repository;
+            _users = users;
         }
 
         public IActionResult DoctorList()
@@ -44,7 +41,7 @@ namespace DocApp.Controllers
         // POST: User/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterVM model)
+        public IActionResult Register(RegisterVM model)
         {
             if (!ModelState.IsValid)
             {
@@ -79,10 +76,9 @@ namespace DocApp.Controllers
                 return View(model);
             }
 
-            _context.Add(_user);
+            _users.Add(_user);
             _user.CreatedBy = _user.Id;
-            await _context.SaveChangesAsync();
-
+            _users.SaveChanges();
 
             TempData["success"] = "You have been registered successfully";
             return RedirectToAction("Login", "Users");
@@ -118,7 +114,7 @@ namespace DocApp.Controllers
                 return View(model);
             }
 
-            var user = _context.Users.FirstOrDefault(u => u.Email == _user.Email);
+            var user = _users.GetAll().FirstOrDefault(u => u.Email == _user.Email);
 
             var claims = new List<Claim>
             {
@@ -165,13 +161,7 @@ namespace DocApp.Controllers
 
         private bool UserExists(string email, string password)
         {
-            var _user = _context.Users.FirstOrDefault(u => u.Email == email && u.Password == password);
-
-            if (_user == null)
-            {
-                return false;
-            }
-            return true;
+            return _users.GetAll().Any(u => u.Email == email && u.Password == password);
         }
     }
 }
