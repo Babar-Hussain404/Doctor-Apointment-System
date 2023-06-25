@@ -53,7 +53,7 @@
                                     }
                                     else if (appointment.Status == Appointment.StatusEnum.Active)
                                     {
-                                        <span class="badge bg-label-success me-1">Approved</span>
+                                        <span class="badge bg-label-success me-1">Active</span>
                                     }
                                     else
                                     {
@@ -62,9 +62,9 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-around">
-                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value != "Customer"))
+                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value != "Patient"))
                                         {
-                                            <a href="/Bookings/Approved?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-success
+                                            <a href="/Appointments/Active?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-success
                                             @((appointment.Status == Appointment.StatusEnum.Active) ? "disabled" : "")"
                                                data-bs-toggle="tooltip"
                                                data-bs-offset="0,4"
@@ -74,7 +74,7 @@
                                                data-bs-original-title="<i class='bx bx-check-square bx-xs'></i> <span>Active</span>">
                                                 <span class="tf-icons bx bx-check-square"></span>
                                             </a>
-                                            <a href="/Bookings/Rejected?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-warning
+                                            <a href="/Appointments/Closed?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-warning
                                             @((appointment.Status == Appointment.StatusEnum.Closed) ? "disabled" : "")"
                                                data-bs-toggle="tooltip"
                                                data-bs-offset="0,4"
@@ -85,7 +85,7 @@
                                                 <span class="tf-icons bx bx-x-circle"></span>
                                             </a>
                                         }
-                                        <a href="/Bookings/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
+                                        <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
                                            data-bs-toggle="tooltip"
                                            data-bs-offset="0,4"
                                            data-bs-placement="top"

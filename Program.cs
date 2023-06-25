@@ -1,5 +1,5 @@
 using DocApp.Data;
-using DocApp.Repositories;
+using DocApp.GenericRepository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +10,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<DocAppContext>(options =>
                                                     options.UseSqlServer(connectionString));
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(option =>

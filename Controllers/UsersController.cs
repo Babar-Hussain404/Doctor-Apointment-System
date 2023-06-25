@@ -1,11 +1,10 @@
 ﻿using DocApp.Data;
+using DocApp.GenericRepository;
 using DocApp.Models;
-using DocApp.Repositories;
 using DocApp.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Text;
 
@@ -15,24 +14,25 @@ namespace DocApp.Controllers
     public class UsersController : Controller
     {
         private readonly DocAppContext _context;
-        private readonly IUserRepository _userRepository;
+        private readonly IGenericRepository<User> _users;
 
-        public UsersController(DocAppContext context, IUserRepository userRepository)
+
+        public UsersController(DocAppContext context, IGenericRepository<User> repository)
         {
             _context = context;
-            _userRepository = userRepository;
+            _users = repository;
         }
 
         public IActionResult DoctorList()
         {
-            var _users = _userRepository.GetAllUsers();
-            return View(_users);
+            var _doctors = _users.GetAll().Where(u=> u.UserType == "Doctor");
+            return View(_doctors);
         }
 
         public IActionResult PatientList()
         {
-            var _users = _userRepository.GetAllUsers();
-            return View(_users);
+            var _patients = _users.GetAll().Where(u => u.UserType == "Patient");
+            return View(_patients);
         }
 
         // GET: User/Register
@@ -82,6 +82,7 @@ namespace DocApp.Controllers
             _context.Add(_user);
             _user.CreatedBy = _user.Id;
             await _context.SaveChangesAsync();
+
 
             TempData["success"] = "You have been registered successfully";
             return RedirectToAction("Login", "Users");
@@ -159,7 +160,7 @@ namespace DocApp.Controllers
             // Clear session data
             HttpContext.Session.Clear();
 
-            return RedirectToAction("Login", "Users");
+            return RedirectToAction("Login");
         }
 
         private bool UserExists(string email, string password)
