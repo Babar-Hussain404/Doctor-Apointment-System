@@ -4,7 +4,9 @@ using DocApp.Models;
 using DocApp.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Security.Claims;
 using System.Text;
 
@@ -20,12 +22,14 @@ namespace DocApp.Controllers
             _users = users;
         }
 
+        [Authorize(Roles = "Staff")]
         public IActionResult DoctorList()
         {
             var _doctors = _users.GetAll().Where(u=> u.UserType == "Doctor");
             return View(_doctors);
         }
 
+        [Authorize(Roles = "Staff")]
         public IActionResult PatientList()
         {
             var _patients = _users.GetAll().Where(u => u.UserType == "Patient");
