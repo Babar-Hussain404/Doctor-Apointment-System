@@ -38,15 +38,15 @@
             <div class="table-responsive text-nowrap">
                 <table id="booking-table" class="table" style="width:100%">
                     <thead>
-
                         <tr>
                             <th>No</th>
-                            <th>Patient Phone</th>
                             <th>SlotNo</th>
-                            <th>Apponiment Date</th>
+                            <th>Appointment Date</th>
                             <th>Status</th>
+                            <th>Disease</th>
+                            <th>Description</th>
+                            <th>Prescription</th>
                         </tr>
-
                     </thead>
                     <tbody>
                         @{
@@ -55,10 +55,7 @@
                         @foreach (var appointment in Model)
                         {
                             <tr>
-                                <td>
-                                    @counter
-                                </td>
-                                <td>@appointment.PatientPhone</td>
+                                <td>@counter</td>
                                 <td>@appointment.SlotNo</td>
                                 <td>@appointment.Date.ToShortDateString()</td>
                                 <td>
@@ -75,12 +72,15 @@
                                         <span class="badge bg-label-danger me-1">Closed</span>
                                     }
                                 </td>
-                                
+                                <td>@appointment.Disease</td>
+                                <td style="white-space: normal; word-wrap: break-word; max-width: 150px;">@appointment.Description</td>
+                                <td style="white-space: normal; word-wrap: break-word; max-width: 150px;">@appointment.Prescription</td>
                             </tr>
                             counter++;
                         }
                     </tbody>
                 </table>
+
             </div>
         </div>
     </div>
