@@ -2,7 +2,9 @@
 using DocApp.GenericRepository;
 using DocApp.Models;
 using DocApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Text;
 
 namespace DocApp.Controllers
@@ -18,7 +20,9 @@ namespace DocApp.Controllers
             _users = users;
         }
 
+
         // GET: Appointment List
+        [Authorize(Roles = "Staff , Patient")]
         public IActionResult AppointmentList()
         {
             var _apointmentList = _appointments.GetAll();
@@ -26,6 +30,7 @@ namespace DocApp.Controllers
         }
 
         // GET: Active Appointment List
+        [Authorize(Roles = "Doctor")]
         public IActionResult ActiveAppointmentList()
         {
             var _activeApointmentList = _appointments.GetAll().Where(a => a.isActive == true );
@@ -33,6 +38,7 @@ namespace DocApp.Controllers
         }
 
         // GET: Patient Details
+        [Authorize(Roles = "Doctor")]
         public IActionResult PatientDetails(string Id)
         {
             var _patientDetails = _appointments.GetById(new Guid(Id));
@@ -40,6 +46,7 @@ namespace DocApp.Controllers
         }
 
         // GET: Patient History
+        [Authorize(Roles = "Doctor")]
         public IActionResult PatientHistory(string Id)
         {
             var _patientHistory = _appointments.GetAll().Where(a => a.PatientId == new Guid(Id));
@@ -47,6 +54,7 @@ namespace DocApp.Controllers
         }
 
         // GET: Add Appointment
+        [Authorize(Roles = "Patient")]
         public IActionResult AddAppointment()
         {
             return View();
@@ -54,6 +62,7 @@ namespace DocApp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Patient")]
         public IActionResult AddAppointment(PatientVM model)
         {
             // Get the current user's ID from the session
@@ -116,6 +125,7 @@ namespace DocApp.Controllers
         }
 
         //GET: Appointments/Approved/Id
+        [Authorize(Roles = "Doctor")]
         public IActionResult AddPrescription(Appointment model)
         {
             var _appointment = _appointments.GetById(model.Id);
@@ -144,6 +154,7 @@ namespace DocApp.Controllers
         }
 
         //GET: Appointments/Approved/Id
+        [Authorize(Roles = "Staff")]
         public IActionResult Active(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
@@ -170,6 +181,7 @@ namespace DocApp.Controllers
         }
 
         //GET: Appointments/Rejected/Id
+        [Authorize(Roles = "Doctor , Staff")]
         public IActionResult Closed(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
@@ -196,6 +208,7 @@ namespace DocApp.Controllers
         }
 
         //GET: Appointments/Delete/Id
+        [Authorize(Roles = "Doctor , Staff , Patient")]
         public IActionResult Delete(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
