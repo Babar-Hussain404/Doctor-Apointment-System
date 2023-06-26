@@ -18,11 +18,32 @@ namespace DocApp.Controllers
             _users = users;
         }
 
-        // GET: Booking List
+        // GET: Appointment List
         public IActionResult AppointmentList()
         {
             var _apointmentList = _appointments.GetAll();
             return View(_apointmentList);
+        }
+
+        // GET: Active Appointment List
+        public IActionResult ActiveAppointmentList()
+        {
+            var _activeApointmentList = _appointments.GetAll().Where(a => a.isActive == true );
+            return View(_activeApointmentList);
+        }
+
+        // GET: Patient Details
+        public IActionResult PatientDetails(string Id)
+        {
+            var _patientDetails = _appointments.GetById(new Guid(Id));
+            return View(_patientDetails);
+        }
+
+        // GET: Patient History
+        public IActionResult PatientHistory(string Id)
+        {
+            var _patientHistory = _appointments.GetAll().Where(a => a.PatientId == new Guid(Id));
+            return View(_patientHistory);
         }
 
         // GET: Add Appointment
@@ -51,7 +72,7 @@ namespace DocApp.Controllers
             
             if (_apointment)
             {
-                TempData["error"] = "You have already made an appointment";
+                TempData["error"] = "You already have an active appointment";
                 return RedirectToAction("AppointmentList");
             }
 
@@ -59,9 +80,15 @@ namespace DocApp.Controllers
             {
                 Id = Guid.NewGuid(),
                 PatientId = _patient.Id,
-                DoctorName = "Doctor",
                 PatientName = model.FName + model.LName,
+                Age = CalculateAge(DateTime.Parse(_patient.DOB)),
+
                 PatientPhone = _patient.Phoneno,
+                PatientEmail = _patient.Email,
+
+                Disease = model.Disease,
+                Description = model.Description,
+
                 SlotNo = model.SlotNo,
                 Date = DateTime.Now,
                 Status = Appointment.StatusEnum.Pending
@@ -75,7 +102,48 @@ namespace DocApp.Controllers
 
         }
 
-        //GET: Bookings/Approved/Id
+        // Method to calculate age based on date of birth
+        private int CalculateAge(DateTime dob)
+        {
+            var age = DateTime.Now.Year - dob.Year;
+            
+            //if the person's birthdy has not been arrived subtract current year
+            if (DateTime.Now < dob.AddYears(age))
+            {
+                age--;
+            }
+            return age;
+        }
+
+        //GET: Appointments/Approved/Id
+        public IActionResult AddPrescription(Appointment model)
+        {
+            var _appointment = _appointments.GetById(model.Id);
+
+            if (_appointment != null)
+            {
+                if(_appointment.Prescription == null)
+                {
+                    _appointment.Prescription = model.Prescription;
+                    TempData["success"] = "Prescription added successfully";
+                }
+                else
+                {
+                    _appointment.Prescription = model.Prescription;
+                    TempData["success"] = "Prescription Updated successfully";
+                }
+            }
+            else
+            {
+                TempData["error"] = "Unable to Add prescription";
+            }
+
+            _appointments.SaveChanges();
+
+            return RedirectToAction("ActiveAppointmentList");
+        }
+
+        //GET: Appointments/Approved/Id
         public IActionResult Active(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
@@ -89,7 +157,7 @@ namespace DocApp.Controllers
             {
                 _appointment.Status = Appointment.StatusEnum.Active;
                 _appointment.isActive = true;
-                TempData["success"] = "Appointment Activeted successfully";
+                TempData["success"] = "Appointment Activated successfully";
             }
             else
             {
@@ -101,7 +169,7 @@ namespace DocApp.Controllers
             return RedirectToAction("AppointmentList");
         }
 
-        //GET: Bookings/Rejected/Id
+        //GET: Appointments/Rejected/Id
         public IActionResult Closed(string Id)
         {
             if (Id == null || !AppointmentExists(Id))
@@ -127,7 +195,7 @@ namespace DocApp.Controllers
             return RedirectToAction("AppointmentList");
         }
 
-        //GET: Bookings/Delete/Id
+        //GET: Appointments/Delete/Id
         public IActionResult Delete(string Id)
         {
             if (Id == null || !AppointmentExists(Id))

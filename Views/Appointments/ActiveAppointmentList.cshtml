@@ -26,7 +26,7 @@
                             <th>SlotNo</th>
                             <th>Apponiment Date</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
 
                     </thead>
@@ -60,7 +60,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-around">
-                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value != "Patient"))
+                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Staff"))
                                         {
                                             <a href="/Appointments/Active?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-success
                                             @((appointment.Status == Appointment.StatusEnum.Active) ? "disabled" : "")"
@@ -81,6 +81,28 @@
                                                title=""
                                                data-bs-original-title="<i class='bx bx-x-circle bx-xs'></i> <span>Close</span>">
                                                 <span class="tf-icons bx bx-x-circle"></span>
+                                            </a>
+                                        }
+                                        else if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Doctor"))
+                                        {
+                                            <a href="/Appointments/PatientDetails?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-info"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-offset="0,4"
+                                               data-bs-placement="top"
+                                               data-bs-html="true"
+                                               title=""
+                                               data-bs-original-title="<i class='bx bx-detail bx-xs'></i> <span>Details</span>">
+                                                <span class="tf-icons bx bx-detail"></span>
+                                            </a>
+
+                                            <a href="/Appointments/PatientHistory?Id=@appointment.PatientId" class="btn btn-icon btn-sm btn-outline-secondary"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-offset="0,4"
+                                               data-bs-placement="top"
+                                               data-bs-html="true"
+                                               title=""
+                                               data-bs-original-title="<i class='bx bx-history bx-xs'></i> <span>History</span>">
+                                                <span class="tf-icons bx bx-history"></span>
                                             </a>
                                         }
                                         <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"

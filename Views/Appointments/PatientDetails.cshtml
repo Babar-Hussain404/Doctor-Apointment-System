@@ -1,0 +1,212 @@
+﻿@model DocApp.Models.Appointment
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Dashboard / Appointments</span> / Details</h4>
+
+    <partial name="_Alerts" />
+
+    <!-- Basic Layout -->
+    <div class="row">
+        
+        <div class="col-xl-1"></div>
+
+        <!-- Residence Details form-->
+        <div class="col-xl-10">
+            <div class="card mb-4">
+                <div class="card-header d-flex">
+                    <h5 class="mx-auto my-3"><strong class="fon">Patient Details</strong></h5>
+                    
+                </div>
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-md-1"></div>
+
+                        <div class="col-md-4 border border-top-0 rounded-bottom">
+                            <!--About Section-->
+                            <div class="text-muted fw-light">
+                                About Patient
+                                <hr />
+                            </div>
+
+                            <div class="mb-3">
+                                <!--Basic Information-->
+                                <div class="fw-bold">Basic Information</div>
+                                <div class="row">
+
+                                    <div class="col-sm-3">Name:</div>
+                                    <div class="col-sm-9">@Model.PatientName</div>
+
+                                    <div class="col-sm-3">Age:</div>
+                                    <div class="col-sm-9">@Model.Age</div>
+
+                                    <div class="col-sm-3">Slot:</div>
+                                    <div class="col-sm-9">@Model.SlotNo</div>
+
+                                </div>
+
+                                <!--Contact Information-->
+                                <div class="fw-bold mt-2">Contact Information</div>
+                                <div class="row">
+
+                                    <div class="col-sm-3">Phone:</div>
+                                    <div class="col-sm-9 mb-1">@Model.PatientPhone</div>
+
+                                    <div class="col-sm-3">Email:</div>
+                                    <div class="col-sm-9 mb-1">@Model.PatientEmail</div>
+
+                                </div>
+
+                                <!--Buttons-->
+                                <div class="d-flex btn-group justify-content-center m-4">
+
+                                    <a class="btn btn-danger" href="/Appointments/Closed?Id=@Model.Id">
+                                        <span class="tf-icons bx bx-x-circle"></span>&nbsp;Close
+                                    </a>
+
+                                    <a asp-controller="Appointments" asp-action="ActiveAppointmentList" class="btn btn-outline-secondary">
+                                        <span class="tf-icons bx bx-right-arrow-alt"></span>&nbsp;Back
+                                    </a>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="col-md-1"></div>
+
+                        <div class="col-md-5 border border-top-0 rounded-bottom">
+                            <!--About Section-->
+                            <div class="text-muted fw-light">
+                                Patient Health
+                                <hr />
+                            </div>
+
+                            <div class="row">
+
+                                <!--Disease-->
+                                <div class="col-sm-3">Disease:</div>
+                                <div class="col-sm-9 mb-1">@Model.Disease</div>
+
+                                <!--Description-->
+                                <div class="col-sm-4 mt-2">Description:</div>
+                                <div class="col-sm-8"></div>
+
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-9">
+
+                                    @if (Model.Description != null)
+                                    {
+                                        @Model.Description
+                                    }
+                                    else
+                                    {
+                                        <p>No Description Provided.</p>
+                                    }
+                                </div>
+
+                                <!--Prescription-->
+                                <div class="col-sm-4 mt-2">Prescription:</div>
+                                <div class="col-sm-8"></div>
+
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-9">
+
+                                    @if (Model.Prescription != null)
+                                    {
+                                        @Model.Prescription
+
+                                        <button type="button" class="btn btn-warning m-4" data-bs-toggle="modal" data-bs-target="#prescriptionModal">
+                                            <span class="tf-icons bx bx-edit"></span>&nbsp;Edit Prescription
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <p>No Prescription added yet.</p>
+
+                                        <button type="button" class="btn btn-primary m-4" data-bs-toggle="modal" data-bs-target="#prescriptionModal">
+                                            <span class="tf-icons bx bx-book-add"></span>&nbsp;Add Prescription
+                                        </button>
+                                    }
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-1"></div>
+
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-xl-1"></div>
+    </div>
+</div>
+
+<!--Modal for Adding Prescription-->
+<div class="modal fade" id="prescriptionModal" tabindex="-1" style="display: none;" aria-hidden="true" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+
+            <!--Modal Header-->
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2">Add Prescription</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form asp-action="AddPrescription" id="sub" method="post">
+                
+                <!--Modal Body-->
+                <div class="modal-body">
+
+                    <div class="row">
+                        <input type="hidden" asp-for="@Model.Id" />
+                        <div class="col mb-3">
+                            <label class="form-label" asp-for="Prescription"></label>
+                            <div class="input-group input-group-merge">
+                                <span id="basic-icon-default-message2" class="input-group-text">
+                                    <i class='bx bxs-detail'></i>
+                                </span>
+                                <textarea id="Prescription"
+                                          class="form-control"
+                                          asp-for="Prescription"
+                                          placeholder="@(Model.Prescription != null ? Model.Prescription : "Write a prescription about this patient...")"
+                                          aria-label="Write a prescription about this patient..."
+                                          aria-describedby="basic-icon-default-Prescription"></textarea>
+
+                            </div>
+                            <span asp-validation-for="Prescription" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!--Modal Footer-->
+                <div class="modal-footer btn-group">
+                    <button type ="submit" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    
+                    @if (Model.Prescription == null)
+                    {
+                        <button class="btn btn-primary">Add</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-warning">Edit</button>
+                    }
+                    
+                </div>
+
+            </form>
+            
+        </div>
+    </div>
+</div>

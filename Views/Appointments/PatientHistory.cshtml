@@ -2,18 +2,38 @@
 @using System.Security.Claims
 
 @{
-    ViewData["Title"] = "Appointment List";
+    ViewData["Title"] = "Appointment History";
 }
 
 <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Dashboard /</span> Appointments</h4>
+    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Dashboard / Appointments </span>/ Appointment History</h4>
 
     <!-- Bordered Table -->
     
     <partial name="_Alerts" />
 
     <div class="card">
-        <h5 class="card-header">Appointment List</h5>
+
+        <div class="d-flex justify-content-between">
+            @{
+                bool isFirst = true;
+                foreach (var appointment in Model)
+                {
+                    if (isFirst)
+                    {
+                        <h5 class="card-header">@appointment.PatientName's Appointment History</h5>
+                        isFirst = false;
+                    }
+
+                }
+            }
+
+            <a asp-controller="Appointments" asp-action="ActiveAppointmentList" class="btn btn-outline-secondary m-4">
+                <span class="tf-icons bx bx-right-arrow-alt"></span>&nbsp;Back
+            </a>
+        </div>
+        
+
         <div class="card-body">
             <div class="table-responsive text-nowrap">
                 <table id="booking-table" class="table" style="width:100%">
@@ -21,12 +41,10 @@
 
                         <tr>
                             <th>No</th>
-                            <th>Patient Name</th>
                             <th>Patient Phone</th>
                             <th>SlotNo</th>
                             <th>Apponiment Date</th>
                             <th>Status</th>
-                            <th>Actions</th>
                         </tr>
 
                     </thead>
@@ -40,7 +58,6 @@
                                 <td>
                                     @counter
                                 </td>
-                                <td>@appointment.PatientName</td>
                                 <td>@appointment.PatientPhone</td>
                                 <td>@appointment.SlotNo</td>
                                 <td>@appointment.Date.ToShortDateString()</td>
@@ -58,42 +75,7 @@
                                         <span class="badge bg-label-danger me-1">Closed</span>
                                     }
                                 </td>
-                                <td>
-                                    <div class="d-flex justify-content-around">
-                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value != "Patient"))
-                                        {
-                                            <a href="/Appointments/Active?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-success
-                                            @((appointment.Status == Appointment.StatusEnum.Active) ? "disabled" : "")"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-offset="0,4"
-                                               data-bs-placement="top"
-                                               data-bs-html="true"
-                                               title=""
-                                               data-bs-original-title="<i class='bx bx-check-square bx-xs'></i> <span>Active</span>">
-                                                <span class="tf-icons bx bx-check-square"></span>
-                                            </a>
-                                            <a href="/Appointments/Closed?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-warning
-                                            @((appointment.Status == Appointment.StatusEnum.Closed) ? "disabled" : "")"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-offset="0,4"
-                                               data-bs-placement="top"
-                                               data-bs-html="true"
-                                               title=""
-                                               data-bs-original-title="<i class='bx bx-x-circle bx-xs'></i> <span>Close</span>">
-                                                <span class="tf-icons bx bx-x-circle"></span>
-                                            </a>
-                                        }
-                                        <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
-                                           data-bs-toggle="tooltip"
-                                           data-bs-offset="0,4"
-                                           data-bs-placement="top"
-                                           data-bs-html="true"
-                                           title=""
-                                           data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
-                                            <span class="tf-icons bx bx-trash"></span>
-                                        </a>
-                                    </div>
-                                </td>
+                                
                             </tr>
                             counter++;
                         }
