@@ -4,6 +4,7 @@ using DocApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DocApp.Migrations
 {
     [DbContext(typeof(DocAppContext))]
-    partial class DocAppContextModelSnapshot : ModelSnapshot
+    [Migration("20230626095029_Initial1")]
+    partial class Initial1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,9 +30,6 @@ namespace DocApp.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
 
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
@@ -54,10 +54,6 @@ namespace DocApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PatientEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uniqueidentifier");
 
@@ -70,6 +66,7 @@ namespace DocApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Prescription")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SlotNo")

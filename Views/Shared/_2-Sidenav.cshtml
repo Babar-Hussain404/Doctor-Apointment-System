@@ -67,6 +67,12 @@
         <!--Lists-->
         @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Staff"))
         {
+            <!--Info  heading-->
+            <li class="menu-header small">
+                <span class="menu-header-text">Menu</span>
+            </li>
+            <!--Info  heading-->
+
             <li class="menu-item
             @(controller == "Users" && action == "DoctorList" ? "active" : "")">
 
@@ -127,6 +133,26 @@
                 </a>
             </li>
             <!--Add Appointment-->
+        }
+
+        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Doctor"))
+        {
+            <!--Info  heading-->
+            <li class="menu-header small">
+                <span class="menu-header-text">Menu</span>
+            </li>
+            <!--Info  heading-->
+
+            <li class="menu-item
+            @(controller == "Appointments" && action == "ActiveAppointmentList" ? "active" : "")">
+
+                <a asp-controller="Appointments" asp-action="ActiveAppointmentList"
+                   class="menu-link">
+                    <i class="menu-icon tf-icons bx bx-list-ol"></i>
+                    <div data-i18n="ActiveAppointmentList">Appointments</div>
+                </a>
+            </li>
+
         }
 
         <!--Info  heading-->
