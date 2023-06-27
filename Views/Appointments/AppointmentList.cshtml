@@ -1,5 +1,11 @@
 ﻿@model IEnumerable<DocApp.Models.Appointment>
 @using System.Security.Claims
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var httpContext = HttpContextAccessor.HttpContext;
+    var userId = httpContext?.Session.GetString("UserId");
+}
 
 @{
     ViewData["Title"] = "Appointment List";
@@ -60,7 +66,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-around">
-                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value != "Patient"))
+                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Staff"))
                                         {
                                             <a href="/Appointments/Active?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-success
                                             @((appointment.Status == Appointment.StatusEnum.Active) ? "disabled" : "")"
@@ -82,16 +88,33 @@
                                                data-bs-original-title="<i class='bx bx-x-circle bx-xs'></i> <span>Close</span>">
                                                 <span class="tf-icons bx bx-x-circle"></span>
                                             </a>
+
+                                            <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
+                                               data-bs-toggle="tooltip"
+                                               data-bs-offset="0,4"
+                                               data-bs-placement="top"
+                                               data-bs-html="true"
+                                               title=""
+                                               data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
+                                                <span class="tf-icons bx bx-trash"></span>
+                                            </a>
                                         }
-                                        <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
-                                           data-bs-toggle="tooltip"
-                                           data-bs-offset="0,4"
-                                           data-bs-placement="top"
-                                           data-bs-html="true"
-                                           title=""
-                                           data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
-                                            <span class="tf-icons bx bx-trash"></span>
-                                        </a>
+                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Patient"))
+                                        {
+                                            if (!string.IsNullOrEmpty(userId) && appointment.PatientId.ToString() == userId)
+                                            {
+                                                <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
+                                                   data-bs-toggle="tooltip"
+                                                   data-bs-offset="0,4"
+                                                   data-bs-placement="top"
+                                                   data-bs-html="true"
+                                                   title=""
+                                                   data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
+                                                    <span class="tf-icons bx bx-trash"></span>
+                                                </a>
+                                            }
+                                        }
+                                        
                                     </div>
                                 </td>
                             </tr>

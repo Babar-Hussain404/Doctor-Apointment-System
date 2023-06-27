@@ -204,6 +204,21 @@ namespace DocApp.Controllers
 
             _appointments.SaveChanges();
 
+            // Get the current user's ID from the session
+            byte[]? userIdBytes;
+            if (!HttpContext.Session.TryGetValue("UserId", out userIdBytes))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            Guid userId = new Guid(Encoding.ASCII.GetString(userIdBytes));
+            var _currentUser = _users.GetById(userId);
+            
+            if(_currentUser.UserType == "Doctor")
+            {
+                TempData["success"] = "Appointment Closed successfully";
+                return RedirectToAction("ActiveAppointmentList");
+            }
+
             return RedirectToAction("AppointmentList");
         }
 
@@ -214,6 +229,28 @@ namespace DocApp.Controllers
             if (Id == null || !AppointmentExists(Id))
             {
                 return NotFound();
+            }
+
+            var _appointment = _appointments.GetById(new Guid(Id));
+
+            // Get the current user's ID from the session
+            byte[]? userIdBytes;
+            if (!HttpContext.Session.TryGetValue("UserId", out userIdBytes))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            Guid userId = new Guid(Encoding.ASCII.GetString(userIdBytes));
+            var _currentUser = _users.GetById(userId);
+
+            if (_currentUser.UserType =="Patient" && _appointment.PatientId != _currentUser.Id) 
+            {
+                TempData["error"] = "You can only delete your own Appointment!";
+                return RedirectToAction("AppointmentList");
+            }
+            else if (_currentUser.UserType == "Doctor") 
+            {
+                TempData["success"] = "Appointment deleted successfully";
+                return RedirectToAction("ActiveAppointmentList");
             }
 
             _appointments.Delete(new Guid(Id));
