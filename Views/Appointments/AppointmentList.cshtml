@@ -1,11 +1,5 @@
 ﻿@model IEnumerable<DocApp.Models.Appointment>
 @using System.Security.Claims
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-
-@{
-    var httpContext = HttpContextAccessor.HttpContext;
-    var userId = httpContext?.Session.GetString("UserId");
-}
 
 @{
     ViewData["Title"] = "Appointment List";
@@ -99,21 +93,15 @@
                                                 <span class="tf-icons bx bx-trash"></span>
                                             </a>
                                         }
-                                        @if (User.Identity?.IsAuthenticated == true && User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Patient"))
-                                        {
-                                            if (!string.IsNullOrEmpty(userId) && appointment.PatientId.ToString() == userId)
-                                            {
-                                                <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
-                                                   data-bs-toggle="tooltip"
-                                                   data-bs-offset="0,4"
-                                                   data-bs-placement="top"
-                                                   data-bs-html="true"
-                                                   title=""
-                                                   data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
-                                                    <span class="tf-icons bx bx-trash"></span>
-                                                </a>
-                                            }
-                                        }
+                                        <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
+                                           data-bs-toggle="tooltip"
+                                           data-bs-offset="0,4"
+                                           data-bs-placement="top"
+                                           data-bs-html="true"
+                                           title=""
+                                           data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
+                                            <span class="tf-icons bx bx-trash"></span>
+                                        </a>
                                         
                                     </div>
                                 </td>
@@ -166,21 +154,7 @@
                 
             });
 
-            $(".pdfButton").click(function () {
-                debugger
-                GetPDF();
-            });
-
-            function GetPDF() {
-                var pdfDoc = {
-                    pageSize: 'A5',
-                    fontSize: 8,
-                    pageOrientation: 'landscape',
-                    margin: [0, 20, 0, 8],
-
-                };
-                pdfMake.createPdf(pdfDoc);
-            }
+            
 
         });
 

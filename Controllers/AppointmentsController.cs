@@ -1,6 +1,8 @@
 ﻿using DocApp.Data;
 using DocApp.GenericRepository;
 using DocApp.Models;
+using DocApp.Services.AppointmentService;
+using DocApp.Services.UserService;
 using DocApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +13,10 @@ namespace DocApp.Controllers
 {
     public class AppointmentsController : Controller
     {
-        private readonly IGenericRepository<Appointment> _appointments;
-        private readonly IGenericRepository<User> _users;
+        private readonly IAppointmentService _appointments;
+        private readonly IUserService _users;
 
-        public AppointmentsController(IGenericRepository<Appointment> appointments, IGenericRepository<User> users)
+        public AppointmentsController(IAppointmentService appointments, IUserService users)
         {
             _appointments = appointments;
             _users = users;
@@ -27,6 +29,22 @@ namespace DocApp.Controllers
         {
             var _apointmentList = _appointments.GetAll();
             return View(_apointmentList);
+        }
+
+        // GET: My Appointment List
+        [Authorize(Roles = "Patient")]
+        public IActionResult MyAppointmentList()
+        {
+            // Get the current user's ID from the session
+            byte[]? userIdBytes;
+            if (!HttpContext.Session.TryGetValue("UserId", out userIdBytes))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            Guid _currentUserId = new Guid(Encoding.ASCII.GetString(userIdBytes));
+
+            var _myApointmentList = _appointments.GetAll().Where(a => a.PatientId == _currentUserId);
+            return View(_myApointmentList);
         }
 
         // GET: Active Appointment List
@@ -82,7 +100,7 @@ namespace DocApp.Controllers
             if (_apointment)
             {
                 TempData["error"] = "You already have an active appointment";
-                return RedirectToAction("AppointmentList");
+                return RedirectToAction("AddAppointment");
             }
 
             var appointment = new Appointment
@@ -100,14 +118,15 @@ namespace DocApp.Controllers
 
                 SlotNo = model.SlotNo,
                 Date = DateTime.Now,
-                Status = Appointment.StatusEnum.Pending
+                Status = Appointment.StatusEnum.Pending,
+                isActive = false
             };
-
+             
             _appointments.Add(appointment);
             _appointments.SaveChanges();
 
             TempData["success"] = "Appointment Created successfully";
-            return RedirectToAction("AppointmentList");
+            return RedirectToAction("MyAppointmentList");
 
         }
 
@@ -128,10 +147,21 @@ namespace DocApp.Controllers
         [Authorize(Roles = "Doctor")]
         public IActionResult AddPrescription(Appointment model)
         {
+            // Get the current user's ID from the session
+            byte[]? userIdBytes;
+            if (!HttpContext.Session.TryGetValue("UserId", out userIdBytes))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+            Guid userId = new Guid(Encoding.ASCII.GetString(userIdBytes));
+            var _currentUser = _users.GetById(userId);
+
             var _appointment = _appointments.GetById(model.Id);
 
             if (_appointment != null)
             {
+                _appointment.DoctorName = _currentUser.FName+_currentUser.LName;
+
                 if(_appointment.Prescription == null)
                 {
                     _appointment.Prescription = model.Prescription;
@@ -147,7 +177,7 @@ namespace DocApp.Controllers
             {
                 TempData["error"] = "Unable to Add prescription";
             }
-
+            
             _appointments.SaveChanges();
 
             return RedirectToAction("ActiveAppointmentList");
@@ -245,19 +275,25 @@ namespace DocApp.Controllers
             if (_currentUser.UserType =="Patient" && _appointment.PatientId != _currentUser.Id) 
             {
                 TempData["error"] = "You can only delete your own Appointment!";
-                return RedirectToAction("AppointmentList");
+                return RedirectToAction("MyAppointmentList");
             }
             else if (_currentUser.UserType == "Doctor") 
             {
                 TempData["success"] = "Appointment deleted successfully";
                 return RedirectToAction("ActiveAppointmentList");
             }
+            else if(_currentUser.UserType == "Staff")
+            {
+                _appointments.Delete(_appointment.Id);
+                _appointments.SaveChanges();
+                TempData["success"] = "Appointment deleted successfully";
+                return RedirectToAction("AppointmentList");
+            }
 
-            _appointments.Delete(new Guid(Id));
+            _appointments.Delete(_appointment.Id);
             _appointments.SaveChanges();
-
             TempData["success"] = "Appointment deleted successfully";
-            return RedirectToAction("AppointmentList");
+            return RedirectToAction("MyAppointmentList");
         }
 
         private bool AppointmentExists(string Id)

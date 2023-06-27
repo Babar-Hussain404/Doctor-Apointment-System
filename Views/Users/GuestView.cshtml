@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+    Layout = "../Shared/_Auth_Layout.cshtml";
+}
+
+<div class="container-xxl">
+    <div class="authentication-wrapper authentication-basic container-p-y">
+        <div class="authentication-inner">
+
+            <partial name="_Alerts" />
+
+            <!-- Guest View -->
+            <div class="card">
+                <div class="card-body">
+                    <!-- Logo -->
+                    <partial name="Logo" />
+                    <!-- /Logo -->
+
+                    <h4 class="my-3">Welcome to Doc Appoint! 👋</h4>
+                    <p class="mb-4">If you are new to Our Platform Please Register or Login If you are already registered.</p>
+
+                    <div class="btn-group d-flex justify-content-center mx-4">
+                        <a asp-controller="Users" 
+                         asp-action="Register"
+                         class="btn btn-outline-success">
+                            <span>Register</span>
+                        </a>
+                        <a asp-controller="Users"
+                           asp-action="Login"
+                           class="btn btn-success">
+                            <span>Login</span>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            <!-- /Guest View -->
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}
