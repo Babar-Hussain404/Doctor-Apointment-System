@@ -3,6 +3,7 @@ using DocApp.GenericRepository;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -28,6 +29,9 @@ builder.Services.AddSession(option =>
     option.Cookie.HttpOnly = true;
     option.Cookie.IsEssential = true;
 });
+
+builder.Services.AddHttpContextAccessor();
+
 
 builder.Services.AddControllersWithViews();
 
