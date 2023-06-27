@@ -1,6 +1,7 @@
 ﻿using DocApp.Data;
 using DocApp.GenericRepository;
 using DocApp.Models;
+using DocApp.Services.UserService;
 using DocApp.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -15,13 +16,18 @@ namespace DocApp.Controllers
     //[AllowAnonymous]
     public class UsersController : Controller
     {
-        private readonly IGenericRepository<User> _users;
+        private readonly IUserService _users;
 
-        public UsersController(IGenericRepository<User> users)
+        public UsersController(IUserService users)
         {
             _users = users;
         }
 
+        public IActionResult GuestView()
+        {
+            return View();
+        }
+        
         [Authorize(Roles = "Staff")]
         public IActionResult DoctorList()
         {
@@ -160,7 +166,7 @@ namespace DocApp.Controllers
             // Clear session data
             HttpContext.Session.Clear();
 
-            return RedirectToAction("Login");
+            return RedirectToAction("GuestView");
         }
 
         private bool UserExists(string email, string password)

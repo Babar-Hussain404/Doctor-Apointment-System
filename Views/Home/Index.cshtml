@@ -9,18 +9,68 @@
 
     <div class="row">
         <div class="col-md-1"></div>
-        <!-- Contact links-->
-        <div class="col-md-10">
-            <div class="card mb-4">
+        <!-- Intro-->
+        <div class="col-md-10 row">
+
+            <div class="col-md-12 card mb-4">
                 <div class="card-body">
                     <!--Description-->
                     <h4>Welcome to the <span class="text-primary">Doctor Appointment System</span> website!</h4>
                     <p>
                         You can get doctor's apointment easily when ever you want.<br />
-                        If you are new to the Website please register first and login to continue.
                     </p>
                 </div>
             </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-none border border-primary mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Total Doctors</h5>
+                        
+                        @if (TempData["totalDoctors"] != null)
+                        {
+                            <div class="text-center display-3">@TempData["totalDoctors"]</div>
+                        }
+                        else
+                        {
+                            <div class="card-text">No doctors yet.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-none border border-success mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title  text-center">Total Patients</h5>
+                        
+                        @if (TempData["totalPatients"] != null)
+                        {
+                            <div class="text-center display-3">@TempData["totalPatients"]</div>
+                        }
+                        else
+                        {
+                            <div class="card-text">No patients yet.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-none border border-warning mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Total Appointments</h5>
+                        
+                        @if (TempData["totalAppointments"] != null)
+                        {
+                            <div class="text-center display-3">@TempData["totalAppointments"]</div>
+                        }
+                        else
+                        {
+                            <div class="card-text">No appointments yet.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <div class="col-md-1"></div>
