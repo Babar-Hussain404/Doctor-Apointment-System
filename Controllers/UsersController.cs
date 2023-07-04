@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Claims;
 using System.Text;
+using X.PagedList;
 
 namespace DocApp.Controllers
 {
@@ -29,17 +30,25 @@ namespace DocApp.Controllers
         }
         
         [Authorize(Roles = "Staff")]
-        public IActionResult DoctorList()
+        public IActionResult DoctorList(int? page)
         {
             var _doctors = _users.GetAll().Where(u=> u.UserType == "Doctor");
-            return View(_doctors);
+
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+
+            return View(_doctors.ToPagedList(pageNumber, pageSize));
         }
 
         [Authorize(Roles = "Staff")]
-        public IActionResult PatientList()
+        public IActionResult PatientList(int? page)
         {
             var _patients = _users.GetAll().Where(u => u.UserType == "Patient");
-            return View(_patients);
+            
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+
+            return View(_patients.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: User/Register

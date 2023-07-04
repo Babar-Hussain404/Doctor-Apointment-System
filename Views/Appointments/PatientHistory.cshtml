@@ -1,5 +1,7 @@
-﻿@model IEnumerable<DocApp.Models.Appointment>
-@using System.Security.Claims
+﻿@model X.PagedList.IPagedList<DocApp.Models.Appointment>
+@using System.Security.Claims;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 
 @{
     ViewData["Title"] = "Appointment History";
@@ -83,6 +85,17 @@
                     </tbody>
                 </table>
 
+                <!-- Render pagination controls -->
+                <div class="pagination-container">
+                    @Html.PagedListPager(Model, page => Url.Action("PatientHistory", new { page }), new PagedListRenderOptions() {
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    UlElementClasses = new[] { "pagination" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always
+                    })
+                </div>
+
             </div>
         </div>
     </div>
@@ -108,40 +121,10 @@
                 "scrollX": "auto",
                 "pageLength": -1,
 
-                buttons: {
-                    buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            className: 'excelButton btn btn-sm btn-outline-success mb-2',
-                            text: '<i class="fas fa-file-excel"></i> Excel'
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            className: 'pdfButton btn btn-sm btn-outline-danger mb-2',
-                            text: '<i class="fas fa-file-pdf"></i> PDF'
-                        }
-                    ]
-                },
-                dom: 'Blftip',
+                dom: 'Blfti',
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 
             });
-
-            $(".pdfButton").click(function () {
-                debugger
-                GetPDF();
-            });
-
-            function GetPDF() {
-                var pdfDoc = {
-                    pageSize: 'A5',
-                    fontSize: 8,
-                    pageOrientation: 'landscape',
-                    margin: [0, 20, 0, 8],
-
-                };
-                pdfMake.createPdf(pdfDoc);
-            }
 
         });
 

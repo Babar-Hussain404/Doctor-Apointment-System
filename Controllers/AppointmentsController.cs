@@ -7,7 +7,9 @@ using DocApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using System.Drawing.Printing;
 using System.Text;
+using X.PagedList;
 
 namespace DocApp.Controllers
 {
@@ -22,18 +24,21 @@ namespace DocApp.Controllers
             _users = users;
         }
 
-
         // GET: Appointment List
         [Authorize(Roles = "Staff , Patient")]
-        public IActionResult AppointmentList()
+        public IActionResult AppointmentList(int? page)
         {
             var _apointmentList = _appointments.GetAll();
-            return View(_apointmentList);
+
+            int pageSize = 1;
+            int pageNumber = (page ?? 1);
+
+            return View(_apointmentList.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: My Appointment List
         [Authorize(Roles = "Patient")]
-        public IActionResult MyAppointmentList()
+        public IActionResult MyAppointmentList(int? page)
         {
             // Get the current user's ID from the session
             byte[]? userIdBytes;
@@ -44,15 +49,23 @@ namespace DocApp.Controllers
             Guid _currentUserId = new Guid(Encoding.ASCII.GetString(userIdBytes));
 
             var _myApointmentList = _appointments.GetAll().Where(a => a.PatientId == _currentUserId);
-            return View(_myApointmentList);
+
+            int pageSize = 1;
+            int pageNumber = (page ?? 1);
+
+            return View(_myApointmentList.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Active Appointment List
         [Authorize(Roles = "Doctor")]
-        public IActionResult ActiveAppointmentList()
+        public IActionResult ActiveAppointmentList(int? page)
         {
             var _activeApointmentList = _appointments.GetAll().Where(a => a.isActive == true );
-            return View(_activeApointmentList);
+
+            int pageSize = 1;
+            int pageNumber = (page ?? 1);
+
+            return View(_activeApointmentList.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Patient Details

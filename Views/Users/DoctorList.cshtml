@@ -1,5 +1,7 @@
-﻿@model IEnumerable<DocApp.Models.User>
-@using System.Security.Claims
+﻿@model X.PagedList.IPagedList<DocApp.Models.User>
+@using System.Security.Claims;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 
 @{
     ViewData["Title"] = "Doctor List";
@@ -52,6 +54,17 @@
                         }
                     </tbody>
                 </table>
+
+                <!-- Render pagination controls -->
+                <div class="pagination-container">
+                    @Html.PagedListPager(Model, page => Url.Action("DoctorList", new { page }), new PagedListRenderOptions() {
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    UlElementClasses = new[] { "pagination" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always
+                    })
+                </div>
             </div>
         </div>
     </div>
@@ -91,7 +104,7 @@
                         }
                     ]
                 },
-                dom: 'Blftip',
+                dom: 'Blfti',
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 
             });
