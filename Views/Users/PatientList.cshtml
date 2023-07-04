@@ -91,43 +91,12 @@
                 "scrollX": "auto",
                 "pageLength": -1,
 
-                buttons: {
-                    buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            className: 'excelButton btn btn-sm btn-outline-success mb-2',
-                            text: '<i class="fas fa-file-excel"></i> Excel'
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            className: 'pdfButton btn btn-sm btn-outline-danger mb-2',
-                            text: '<i class="fas fa-file-pdf"></i> PDF'
-                        }
-                    ]
-                },
                 dom: 'Blftip',
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
 
             });
 
-            $(".pdfButton").click(function () {
-                debugger
-                GetPDF();
-            });
-
-            function GetPDF() {
-                var pdfDoc = {
-                    pageSize: 'A5',
-                    fontSize: 8,
-                    pageOrientation: 'landscape',
-                    margin: [0, 20, 0, 8],
-
-                };
-                pdfMake.createPdf(pdfDoc);
-            }
-
         });
-
 
     </script>
 }
