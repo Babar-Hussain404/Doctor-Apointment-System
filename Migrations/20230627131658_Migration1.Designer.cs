@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DocApp.Migrations
 {
     [DbContext(typeof(DocAppContext))]
-    [Migration("20230626155913_Initial3")]
-    partial class Initial3
+    [Migration("20230627131658_Migration1")]
+    partial class Migration1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,10 @@ namespace DocApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Disease")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DoctorName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

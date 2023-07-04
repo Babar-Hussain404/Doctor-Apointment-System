@@ -1,5 +1,7 @@
-﻿@model IEnumerable<DocApp.Models.Appointment>
-@using System.Security.Claims
+﻿@model X.PagedList.IPagedList<DocApp.Models.Appointment>
+@using System.Security.Claims;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
 
 @{
     ViewData["Title"] = "Appointment List";
@@ -82,16 +84,6 @@
                                                data-bs-original-title="<i class='bx bx-x-circle bx-xs'></i> <span>Close</span>">
                                                 <span class="tf-icons bx bx-x-circle"></span>
                                             </a>
-
-                                            <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
-                                               data-bs-toggle="tooltip"
-                                               data-bs-offset="0,4"
-                                               data-bs-placement="top"
-                                               data-bs-html="true"
-                                               title=""
-                                               data-bs-original-title="<i class='bx bx-trash bx-xs'></i> <span>Delete</span>">
-                                                <span class="tf-icons bx bx-trash"></span>
-                                            </a>
                                         }
                                         <a href="/Appointments/Delete?Id=@appointment.Id" class="btn btn-icon btn-sm btn-outline-danger"
                                            data-bs-toggle="tooltip"
@@ -110,6 +102,18 @@
                         }
                     </tbody>
                 </table>
+                
+                <!-- Render pagination controls -->
+                <div class="pagination-container">
+                    @Html.PagedListPager(Model, page => Url.Action("AppointmentList", new { page }), new PagedListRenderOptions() {
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" },
+                    UlElementClasses = new[] { "pagination" },
+                    DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                    DisplayLinkToLastPage = PagedListDisplayMode.Always
+                    })
+                </div>
+
             </div>
         </div>
     </div>
@@ -135,29 +139,12 @@
                 "scrollX": "auto",
                 "pageLength": -1,
 
-                buttons: {
-                    buttons: [
-                        {
-                            extend: 'excelHtml5',
-                            className: 'excelButton btn btn-sm btn-outline-success mb-2',
-                            text: '<i class="fas fa-file-excel"></i> Excel'
-                        },
-                        {
-                            extend: 'pdfHtml5',
-                            className: 'pdfButton btn btn-sm btn-outline-danger mb-2',
-                            text: '<i class="fas fa-file-pdf"></i> PDF'
-                        }
-                    ]
-                },
-                dom: 'Blftip',
+                dom: 'Blfti',
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 
             });
 
-            
-
         });
-
 
     </script>
 }
